@@ -1,4 +1,4 @@
-import { signUpFormControls } from "../../config";
+import { signInFormControls, signUpFormControls } from "../../config";
 import CommonForm from "../../components/common-form";
 import {
   Tabs,
@@ -9,6 +9,12 @@ import {
 import { GraduationCap } from "lucide-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 
 function AuthPage() {
   const [activeTab, setActiveTab] = useState("signin");
@@ -38,11 +44,26 @@ function AuthPage() {
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="signin">Signin</TabsContent>
+          <TabsContent value="signin">
+            <Card className="p-6 space-y-4">
+              <CardHeader>
+                <CardTitle>Sign in to your account.</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CommonForm formControls={signInFormControls} buttonText={"Sign In"} />
+              </CardContent>
+            </Card>
+          </TabsContent>
           <TabsContent value="signup">
-            <CommonForm 
-              formControls={signUpFormControls} 
-            />
+          <Card className="p-6 space-y-4">
+              <CardHeader>
+                <CardTitle>Create a new account.</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CommonForm formControls={signUpFormControls} buttonText={"Sign Up"} />
+              </CardContent>
+            </Card>
+            {/* <CommonForm formControls={signUpFormControls} /> */}
           </TabsContent>
         </Tabs>
       </div>
