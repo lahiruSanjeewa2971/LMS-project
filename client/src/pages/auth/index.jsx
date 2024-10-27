@@ -7,7 +7,7 @@ import {
   TabsTrigger,
 } from "../../components/ui/tabs";
 import { GraduationCap } from "lucide-react";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -15,9 +15,16 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
+import { AuthContext } from "../../context/auth-context";
 
 function AuthPage() {
   const [activeTab, setActiveTab] = useState("signin");
+  const {
+    signInFormData,
+    setSignInFormData,
+    signUpFormData,
+    setSignUpFormData,
+  } = useContext(AuthContext);
 
   const handleTabChange = (value) => {
     setActiveTab(value);
@@ -50,17 +57,27 @@ function AuthPage() {
                 <CardTitle>Sign in to your account.</CardTitle>
               </CardHeader>
               <CardContent>
-                <CommonForm formControls={signInFormControls} buttonText={"Sign In"} />
+                <CommonForm
+                  formControls={signInFormControls}
+                  buttonText={"Sign In"}
+                  formData={signInFormData}
+                  setFormData={setSignInFormData}
+                />
               </CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="signup">
-          <Card className="p-6 space-y-4">
+            <Card className="p-6 space-y-4">
               <CardHeader>
                 <CardTitle>Create a new account.</CardTitle>
               </CardHeader>
               <CardContent>
-                <CommonForm formControls={signUpFormControls} buttonText={"Sign Up"} />
+                <CommonForm
+                  formControls={signUpFormControls}
+                  buttonText={"Sign Up"}
+                  formData={signUpFormData}
+                  setFormData={setSignUpFormData}
+                />
               </CardContent>
             </Card>
             {/* <CommonForm formControls={signUpFormControls} /> */}

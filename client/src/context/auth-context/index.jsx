@@ -6,5 +6,16 @@ export default function AuthProvider({ children }) {
   const [signInFormData, setSignInFormData] = useState(initialSignInFormData);
   const [signUpFormData, setSignUpFormData] = useState(initialSignUpFormData);
 
-  return <AuthContext.Provider value={{}}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        signInFormData,
+        setSignInFormData,
+        signUpFormData,
+        setSignUpFormData,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }

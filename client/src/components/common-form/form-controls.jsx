@@ -11,8 +11,10 @@ import {
 import { Textarea } from "../ui/textarea";
 
 function FormControls({ formControls = [], formData, setFormData }) {
+
   function renderComponentByType(getControlItem) {
     let element = null;
+    const value = formData[getControlItem.name] || null;
 
     switch (getControlItem.componentType) {
       case "input":
