@@ -1,18 +1,65 @@
-import { registerService } from "../../services";
+import {
+  checkAuthService,
+  loginService,
+  registerService,
+} from "../../services";
 import { initialSignInFormData, initialSignUpFormData } from "../../config";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 export const AuthContext = createContext(null);
 
 export default function AuthProvider({ children }) {
   const [signInFormData, setSignInFormData] = useState(initialSignInFormData);
   const [signUpFormData, setSignUpFormData] = useState(initialSignUpFormData);
+  const [auth, setAuth] = useState({
+    authenticate: false,
+    user: null,
+  });
 
   async function handleRegisterUser(event) {
     event.preventDefault();
     const data = await registerService(signUpFormData);
-
-    console.log('register :', data)
   }
+
+  async function handleLoginUser(event) {
+    event.preventDefault();
+    const data = await loginService(signInFormData);
+
+    if (data.success) {
+      sessionStorage.setItem(
+        "accessToken",
+        JSON.stringify(data.data.accessToken)
+      );
+      setAuth({
+        authenticate: true,
+        user: data.data.user,
+      });
+    } else {
+      setAuth({
+        authenticate: false,
+        user: null,
+      });
+    }
+  }
+
+  // Authenticate user, when page loaded
+  async function checkAuthUser() {
+    const data = await checkAuthService();
+    if (data.success) {
+      setAuth({
+        authenticate: true,
+        user: data.data.user,
+      });
+    } else {
+      setAuth({
+        authenticate: false,
+        user: null,
+      });
+    }
+  }
+
+  useEffect(() => {
+    checkAuthUser();
+  }, [])
 
   return (
     <AuthContext.Provider
@@ -21,7 +68,8 @@ export default function AuthProvider({ children }) {
         setSignInFormData,
         signUpFormData,
         setSignUpFormData,
-        handleRegisterUser
+        handleRegisterUser,
+        handleLoginUser,
       }}
     >
       {children}
