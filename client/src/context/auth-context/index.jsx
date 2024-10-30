@@ -44,6 +44,7 @@ export default function AuthProvider({ children }) {
   // Authenticate user, when page loaded
   async function checkAuthUser() {
     const data = await checkAuthService();
+    console.log('checkAuthUser :', data)
     if (data.success) {
       setAuth({
         authenticate: true,
@@ -58,6 +59,7 @@ export default function AuthProvider({ children }) {
   }
 
   useEffect(() => {
+    console.log('first')
     checkAuthUser();
   }, [])
 
@@ -70,6 +72,7 @@ export default function AuthProvider({ children }) {
         setSignUpFormData,
         handleRegisterUser,
         handleLoginUser,
+        auth
       }}
     >
       {children}

@@ -16,7 +16,8 @@ export async function loginService(formData) {
 }
 
 export async function checkAuthService() {
-    const data = await axiosInstance.post("/auth//check-auth")
+    const data = await axiosInstance.get("/auth/check-auth")
+    console.log('checkAuthService :', data)
 
     return data.data;
 }
