@@ -6,9 +6,11 @@ import RouteGuard from "./components/route-guard";
 import InstructorDashboardPage from "./pages/instructor";
 import StudentViewCommonLayout from "./components/student-view/common-layout";
 import StudentHomePage from "./pages/student/home";
+import NotFoundPage from "./pages/not-found";
 
 function App() {
   const { auth } = useContext(AuthContext);
+  // console.log('auth context ', auth)
 
   return (
     <>
@@ -38,6 +40,8 @@ function App() {
           <Route path="home" element={<StudentHomePage/>} />
           <Route path="" element={<StudentHomePage/>} />
         </Route>
+
+        <Route path="*" element={<NotFoundPage/>} />
       </Routes>
     </>
   );

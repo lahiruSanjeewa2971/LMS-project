@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 export default function RouteGuard({ authenticated, user, element }) {
-    console.log(authenticated, user)
+    // console.log(authenticated, user)
   const location = useLocation();
 
   if (!authenticated && !location.pathname.includes("/auth")) {
