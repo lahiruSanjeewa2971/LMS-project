@@ -6,6 +6,7 @@ import {
 import { initialSignInFormData, initialSignUpFormData } from "../../config";
 import { createContext, useEffect, useState } from "react";
 import { Skeleton } from "../../components/ui/skeleton";
+import { Navigate } from "react-router-dom";
 
 export const AuthContext = createContext(null);
 
@@ -45,7 +46,8 @@ export default function AuthProvider({ children }) {
   async function checkAuthUser() {
     try {
       const data = await checkAuthService();
-      // console.log('checkAuthUser', data)
+      console.log('checkAuthUser', data)
+
       if (data.success) {
         setAuth({
           authenticate: true,
@@ -68,6 +70,13 @@ export default function AuthProvider({ children }) {
     }
   }
 
+  function resetCredentials() {
+    setAuth({
+      authenticate: false,
+      user: null,
+    });
+  }
+
   useEffect(() => {
     checkAuthUser();
   }, []);
@@ -82,6 +91,7 @@ export default function AuthProvider({ children }) {
         handleRegisterUser,
         handleLoginUser,
         auth,
+        resetCredentials
       }}
     >
       {loading ? <Skeleton /> : children}
