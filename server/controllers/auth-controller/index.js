@@ -38,7 +38,7 @@ const loginUser = async (req, res) => {
         userEmail: checkUser.userEmail,
         userName: checkUser.userName,
         role: checkUser.role
-    }, 'JWT_SECRET', { expiresIn: '120m' })
+    }, 'JWT_SECRET', { expiresIn: '600m' })
 
     return res.status(200).json({
         success: true,

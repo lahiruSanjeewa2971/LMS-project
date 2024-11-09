@@ -6,7 +6,6 @@ import {
 import { initialSignInFormData, initialSignUpFormData } from "../../config";
 import { createContext, useEffect, useState } from "react";
 import { Skeleton } from "../../components/ui/skeleton";
-import { Navigate } from "react-router-dom";
 
 export const AuthContext = createContext(null);
 

@@ -11,6 +11,7 @@ import {
 import { Textarea } from "../ui/textarea";
 
 function FormControls({ formControls = [], formData, setFormData }) {
+  console.log(formControls)
   function renderComponentByType(getControlItem) {
     let element = null;
     const value = formData[getControlItem.name] || null;

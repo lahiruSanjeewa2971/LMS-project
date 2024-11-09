@@ -35,12 +35,15 @@ function AddNewCoursePage() {
                 </TabsTrigger>
                 <TabsTrigger value="settings">Settings</TabsTrigger>
               </TabsList>
+              
               <TabsContent value="curriculum">
                 <CourseCurriculum />
               </TabsContent>
+              
               <TabsContent value="course-landing-page">
                 <CourseLanding />
               </TabsContent>
+              
               <TabsContent value="settings">
                 <CourseSettings />
               </TabsContent>

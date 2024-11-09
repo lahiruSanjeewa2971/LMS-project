@@ -8,6 +8,7 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 
 router.get("/check-auth", authenticateMiddleware, (req, res) => {
+// router.get("/check-auth", (req, res) => {
     const user = req.user;
 
     // console.log('user ', user)
