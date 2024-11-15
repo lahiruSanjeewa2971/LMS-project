@@ -7,10 +7,10 @@ const router = express.Router();
 const upload = multer({ dest: 'uploads/' })
 
 router.post('/upload', upload.single('file'), async (req, res) => {
-    console.log('first')
+    // console.log('first')
     try {
         const result = await uploadMediaToCloudinary(req.file.path);
-        console.log('result', result)
+        // console.log('result', result)
 
         res.status(200).json({
             success: true,
