@@ -30,14 +30,12 @@ export async function checkAuthService() {
 // }
 
 export async function mediaUploadService(formData) {
-    console.log('first', formData)
     try {
         const { data } = await axiosInstance.post('/media/upload', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data', // Explicitly set Content-Type
             },
         });
-        console.log('Upload response:', data);
         return data;
     } catch (error) {
         console.error('Upload error:', error.response?.data || error.message);

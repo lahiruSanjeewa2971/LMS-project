@@ -53,26 +53,29 @@ function CourseCurriculum() {
   };
 
   const handleSingleLectureUpload = async (e, index) => {
-    // console.log("file upload :", e.target.files);
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      console.log("seletected file :", selectedFile);
 
+    if (selectedFile) {
       const videoFormData = new FormData();
       videoFormData.append("file", selectedFile);
-
-      for (let pair of videoFormData.entries()) {
-        console.log(`_hi ${pair[0]}:`, pair[1]);
-      }
-
-      // console.log("videoFormData :", videoFormData);
 
       try {
         setMediaUploadProgress(true);
         const response = await mediaUploadService(videoFormData);
-        console.log("file upload :", response);
+
+        if (response.success) {
+          let copyCourseCurriculumFormData = [...courseCurriculumFormData];
+          copyCourseCurriculumFormData[index] = {
+            ...copyCourseCurriculumFormData[index],
+            videoUrl: response?.data?.url,
+            public_id: response?.data?.public_id,
+          };
+          setCourseCurriculumFormData(copyCourseCurriculumFormData);
+        }
       } catch (error) {
         console.log("error in uploading a video ", error);
+      } finally{
+        setMediaUploadProgress(false);
       }
     }
   };
