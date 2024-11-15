@@ -16,7 +16,31 @@ export async function loginService(formData) {
 }
 
 export async function checkAuthService() {
-    const {data} = await axiosInstance.get("/auth/check-auth")
+    const { data } = await axiosInstance.get("/auth/check-auth")
 
     return data;
+}
+
+// export async function mediaUploadService(formData) {
+//     console.log('first', formData)
+//     const {data} = await axiosInstance.post("/media/upload", formData)
+//     console.log('data', data)
+
+//     return data;
+// }
+
+export async function mediaUploadService(formData) {
+    console.log('first', formData)
+    try {
+        const { data } = await axiosInstance.post('/media/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data', // Explicitly set Content-Type
+            },
+        });
+        console.log('Upload response:', data);
+        return data;
+    } catch (error) {
+        console.error('Upload error:', error.response?.data || error.message);
+        throw error;
+    }
 }
