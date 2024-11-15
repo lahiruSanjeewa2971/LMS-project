@@ -19,6 +19,8 @@ function CourseCurriculum() {
     setCourseCurriculumFormData,
     mediaUploadProgress,
     setMediaUploadProgress,
+    mediaUploadPrecentage,
+    setMediaUploadPrecentage,
   } = useContext(InstructorContext);
 
   const handleAddLecture = () => {
@@ -74,7 +76,7 @@ function CourseCurriculum() {
         }
       } catch (error) {
         console.log("error in uploading a video ", error);
-      } finally{
+      } finally {
         setMediaUploadProgress(false);
       }
     }
