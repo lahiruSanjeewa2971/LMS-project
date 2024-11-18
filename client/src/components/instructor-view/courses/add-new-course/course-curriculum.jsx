@@ -13,6 +13,7 @@ import { Label } from "../../../../components/ui/label";
 import { courseCurriculumInitialFormData } from "../../../../config";
 import { mediaUploadService } from "../../../../services";
 import MediaProgressBar from "../../../../components/media-progress-bar";
+import VideoPlayer from "../../../../components/video-player";
 
 function CourseCurriculum() {
   const {
@@ -133,12 +134,26 @@ function CourseCurriculum() {
                 </div>
               </div>
               <div className="mt-6">
-                <Input
-                  type="file"
-                  accept="video/*"
-                  className="mb-4"
-                  onChange={(event) => handleSingleLectureUpload(event, index)}
-                />
+                {courseCurriculumFormData[index]?.videoUrl ? (
+                  <div className="flex gap-3">
+                    <VideoPlayer
+                      url={courseCurriculumFormData[index]?.videoUrl}
+                    />
+                    <Button variant="black">Replace Video</Button>
+                    <Button className="bg-red-900 text-white">
+                      Delete Lecture
+                    </Button>
+                  </div>
+                ) : (
+                  <Input
+                    type="file"
+                    accept="video/*"
+                    className="mb-4"
+                    onChange={(event) =>
+                      handleSingleLectureUpload(event, index)
+                    }
+                  />
+                )}
               </div>
             </div>
           ))}
