@@ -137,7 +137,7 @@ function CourseCurriculum() {
                 {courseCurriculumFormData[index]?.videoUrl ? (
                   <div className="flex gap-3">
                     <VideoPlayer
-                      url={courseCurriculumFormData[index]?.videoUrl}
+                      url={courseCurriculumFormData[index]?.videoUrl} width="450px" height="200px"
                     />
                     <Button variant="black">Replace Video</Button>
                     <Button className="bg-red-900 text-white">
