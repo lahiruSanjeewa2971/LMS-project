@@ -11,7 +11,7 @@ import { Input } from "../../../../components/ui/input";
 import { Switch } from "../../../../components/ui/switch";
 import { Label } from "../../../../components/ui/label";
 import { courseCurriculumInitialFormData } from "../../../../config";
-import { mediaUploadService } from "../../../../services";
+import { mediaDeleteService, mediaUploadService } from "../../../../services";
 import MediaProgressBar from "../../../../components/media-progress-bar";
 import VideoPlayer from "../../../../components/video-player";
 
@@ -87,6 +87,38 @@ function CourseCurriculum() {
     }
   };
 
+  const isCourseCurriculumFormDataValid = () => {
+    return courseCurriculumFormData.every((item) => {
+      return (
+        item &&
+        typeof item === "object" &&
+        item.title.trim() !== "" &&
+        item.videoUrl.trim() !== ""
+      );
+    });
+  };
+
+  const handleReplaceVideo = async (index) => {
+    let copyCourseCurriculumFormData = [...courseCurriculumFormData];
+    const getCurrentVideoPublicId =
+      copyCourseCurriculumFormData[index].public_id;
+
+    const deleteCurrentMediaResponse = await mediaDeleteService(
+      getCurrentVideoPublicId
+    );
+
+    // console.log('deleteCurrentMediaResponse :', deleteCurrentMediaResponse)
+    if (deleteCurrentMediaResponse?.success) {
+      copyCourseCurriculumFormData[index] = {
+        ...copyCourseCurriculumFormData[index],
+        videoUrl: "",
+        public_id: "",
+      };
+
+      setCourseCurriculumFormData(copyCourseCurriculumFormData);
+    }
+  };
+
   console.log("data :", courseCurriculumFormData);
 
   return (
@@ -95,7 +127,11 @@ function CourseCurriculum() {
         <CardTitle>Create Course Curriculum</CardTitle>
       </CardHeader>
       <CardContent>
-        <Button variant="black" onClick={handleAddLecture}>
+        <Button
+          variant="black"
+          onClick={handleAddLecture}
+          disabled={!isCourseCurriculumFormDataValid() || mediaUploadProgress}
+        >
           Add Lecture
         </Button>
 
@@ -137,9 +173,16 @@ function CourseCurriculum() {
                 {courseCurriculumFormData[index]?.videoUrl ? (
                   <div className="flex gap-3">
                     <VideoPlayer
-                      url={courseCurriculumFormData[index]?.videoUrl} width="450px" height="200px"
+                      url={courseCurriculumFormData[index]?.videoUrl}
+                      width="450px"
+                      height="200px"
                     />
-                    <Button variant="black">Replace Video</Button>
+                    <Button
+                      variant="black"
+                      onClick={() => handleReplaceVideo(index)}
+                    >
+                      Replace Video
+                    </Button>
                     <Button className="bg-red-900 text-white">
                       Delete Lecture
                     </Button>
