@@ -46,3 +46,13 @@ export async function mediaUploadService(formData, onProgressCallback) {
         throw error;
     }
 }
+
+export async function mediaDeleteService(id) {
+    try {
+        const { data } = await axiosInstance.delete(`/media/delete/${id}`);
+        return data;
+    } catch (error) {
+        console.error('Delete error:', error.response?.data || error.message);
+        throw error;
+    }
+}
