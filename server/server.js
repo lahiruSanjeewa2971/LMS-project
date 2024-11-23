@@ -9,6 +9,7 @@ const MONGO_URI = process.env.MONGO_URI
 
 const authRoutes = require('./routes/auth-routes')
 const mediaRoutes = require('./routes/instructor-routes/media-routes')
+const instructorCourseRoutes = require('./routes/instructor-routes/course-routes')
 
 app.use(cors({
     origin: process.env.CLIENT_URL,
@@ -25,6 +26,7 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 // routes config
 app.use("/auth", authRoutes);
 app.use("/media", mediaRoutes);
+app.use("/instructor/course", instructorCourseRoutes);
 
 app.use((err, req, res, next) => {
     console.log(err.stack);
