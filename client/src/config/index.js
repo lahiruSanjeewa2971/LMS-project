@@ -63,6 +63,15 @@ export const courseLandingInitialFormData = {
     image: "",
 };
 
+export const courseCurriculumInitialFormData = [
+    {
+        title: "",
+        videoUrl: "",
+        freePreview: false,
+        public_id: "",
+    },
+];
+
 export const languageOptions = [
     { id: "english", label: "English" },
     { id: "spanish", label: "Spanish" },
@@ -160,15 +169,6 @@ export const courseLandingPageFormControls = [
         label: "Welcome Message",
         componentType: "textarea",
         placeholder: "Welcome message for students",
-    },
-];
-
-export const courseCurriculumInitialFormData = [
-    {
-        title: "",
-        videoUrl: "",
-        freePreview: false,
-        public_id: "",
     },
 ];
 

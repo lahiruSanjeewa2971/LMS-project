@@ -56,3 +56,43 @@ export async function mediaDeleteService(id) {
         throw error;
     }
 }
+
+export async function fetchInstructorCourseListService() {
+    try {
+        const { data } = await axiosInstance.get(`/instructor/course/get`);
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+export async function addNewCourseService(formData) {
+    try {
+        const { data } = await axiosInstance.post(`/instructor/course/add`, formData);
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+export async function fetchInstructorCourseDetailsService(id) {
+    try {
+        const { data } = await axiosInstance.get(`/instructor/course/get/details/${id}`);
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+export async function updateCourseByIdService(id, formData) {
+    try {
+        const { data } = await axiosInstance.post(`/instructor/course/update/${id}`, formData);
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
+}

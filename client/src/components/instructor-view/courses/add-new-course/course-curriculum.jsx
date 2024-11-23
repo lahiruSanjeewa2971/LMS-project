@@ -119,7 +119,7 @@ function CourseCurriculum() {
     }
   };
 
-  console.log("data :", courseCurriculumFormData);
+  // console.log("data :", courseCurriculumFormData);
 
   return (
     <Card>
