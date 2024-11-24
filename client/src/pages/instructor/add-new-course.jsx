@@ -12,12 +12,16 @@ import CourseLanding from "../../components/instructor-view/courses/add-new-cour
 import CourseSettings from "../../components/instructor-view/courses/add-new-course/course-settings";
 import { InstructorContext } from "../../context/instructor-context";
 import { AuthContext } from "../../context/auth-context";
-import { addNewCourseService } from "../../services";
+import {
+  addNewCourseService,
+  fetchInstructorCourseDetailsService,
+  updateCourseByIdService,
+} from "../../services";
 import {
   courseCurriculumInitialFormData,
   courseLandingInitialFormData,
 } from "../../config";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function AddNewCoursePage() {
   const navigate = useNavigate();
@@ -26,8 +30,12 @@ function AddNewCoursePage() {
     courseLandingFormData,
     setCourseLandingFormData,
     setCourseCurriculumFormData,
+    currentEditedCourseId,
+    setCurrentEditedCourseId,
   } = useContext(InstructorContext);
+
   const { auth } = useContext(AuthContext);
+  const params = useParams();
 
   const isEmpty = (value) => {
     if (Array.isArray(value)) {
@@ -63,6 +71,37 @@ function AddNewCoursePage() {
     return hasFreePreview;
   };
 
+  const fetchCurrentCourseDetails = async () => {
+    const response = await fetchInstructorCourseDetailsService(
+      currentEditedCourseId
+    );
+
+    if (response?.success) {
+      const setCourseFormData = Object.keys(
+        courseLandingInitialFormData
+      ).reduce((acc, key) => {
+        acc[key] = response?.data[key] || courseLandingInitialFormData[key];
+
+        return acc;
+      }, {});
+
+      setCourseLandingFormData(setCourseFormData);
+      setCourseCurriculumFormData(response?.data?.curriculum);
+    }
+  };
+
+  useEffect(() => {
+    if (params?.id) {
+      setCurrentEditedCourseId(params?.id);
+    }
+  }, [params?.id]);
+
+  useEffect(() => {
+    if (currentEditedCourseId !== null) {
+      fetchCurrentCourseDetails();
+    }
+  }, [currentEditedCourseId]);
+
   const handleCreateCourse = async () => {
     const coursePayload = {
       instructorId: auth?.user?._id,
@@ -73,14 +112,20 @@ function AddNewCoursePage() {
       curriculum: courseCurriculumFormData,
       isPublished: true,
     };
+    // console.log("edit course coursePayload :", coursePayload);
+    // console.log("currentEditedCourseId :", currentEditedCourseId);
 
-    const response = await addNewCourseService(coursePayload);
-    console.log('add course response :', response)
+    const response =
+      currentEditedCourseId !== null
+        ? await updateCourseByIdService(currentEditedCourseId, coursePayload)
+        : await addNewCourseService(coursePayload);
+    // console.log("add course response :", response);
 
     if (response?.success) {
       setCourseLandingFormData(courseLandingInitialFormData);
       setCourseCurriculumFormData(courseCurriculumInitialFormData);
-      navigate(-1) // it will go back to previous page.
+      navigate(-1); // it will go back to previous page.
+      setCurrentEditedCourseId(null);
     }
   };
 

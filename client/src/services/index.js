@@ -89,7 +89,7 @@ export async function fetchInstructorCourseDetailsService(id) {
 
 export async function updateCourseByIdService(id, formData) {
     try {
-        const { data } = await axiosInstance.post(`/instructor/course/update/${id}`, formData);
+        const { data } = await axiosInstance.put(`/instructor/course/update/${id}`, formData);
         return data;
     } catch (error) {
         console.error('Error:', error.response?.data || error.message);
