@@ -146,14 +146,12 @@ function CourseCurriculum() {
 
     selectedFiles.forEach((fileItem) => bulkFormData.append("files", fileItem));
 
-    console.log("selectedFiles :", selectedFiles);
     try {
       setMediaUploadProgress(true);
       const response = await mediaBulkUploadService(
         bulkFormData,
         setMediaUploadPrecentage
       );
-      console.log("response :", response);
 
       if (response.success) {
         let copyCourseCurriculumFormData = checkCourseCurriculumObjectEmpty(
@@ -180,6 +178,26 @@ function CourseCurriculum() {
     } catch (error) {
       console.log("Error in bulk upload :", error);
       setMediaUploadProgress(false);
+    }
+  };
+
+  const handleDeleteLecture = async (currentIndex) => {
+    let copyCourseCurruculumFormData = [...courseCurriculumFormData];
+    const getCurrentSelectedVideoPublicId =
+      copyCourseCurruculumFormData[currentIndex].public_id;
+
+    try {
+      const response = await mediaDeleteService(
+        getCurrentSelectedVideoPublicId
+      );
+
+      if (response.success) {
+        copyCourseCurruculumFormData = copyCourseCurruculumFormData.filter((_, index) => index !== currentIndex);
+
+        setCourseCurriculumFormData(copyCourseCurruculumFormData);
+      }
+    } catch (error) {
+      console.log("Error in deleting a course video :", error);
     }
   };
 
@@ -267,7 +285,10 @@ function CourseCurriculum() {
                     >
                       Replace Video
                     </Button>
-                    <Button className="bg-red-900 text-white">
+                    <Button
+                      className="bg-red-900 text-white"
+                      onClick={() => handleDeleteLecture(index)}
+                    >
                       Delete Lecture
                     </Button>
                   </div>
