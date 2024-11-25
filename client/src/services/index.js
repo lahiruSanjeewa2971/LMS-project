@@ -96,3 +96,21 @@ export async function updateCourseByIdService(id, formData) {
         throw error;
     }
 }
+
+export async function mediaBulkUploadService(formData, onProgressCallback) {
+    try {
+        const { data } = await axiosInstance.post('/media/bulk-upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data', // Explicitly set Content-Type
+            },
+            onUploadProgress: (progressEvent => {
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                onProgressCallback(percentCompleted);
+            })
+        });
+        return data;
+    } catch (error) {
+        console.error('Upload error:', error.response?.data || error.message);
+        throw error;
+    }
+}
