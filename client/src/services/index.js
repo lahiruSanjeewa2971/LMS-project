@@ -119,3 +119,23 @@ export async function mediaBulkUploadService(formData, onProgressCallback) {
         throw error;
     }
 }
+
+export async function fetchStudentViewCourseListService() {
+    try {
+        const { data } = await axiosInstance.get(`/student/course/get`);
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+export async function fetchInstructorCourseDetailsService(id) {
+    try {
+        const { data } = await axiosInstance.get(`/student/course/get/details/${id}`);
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
+}
