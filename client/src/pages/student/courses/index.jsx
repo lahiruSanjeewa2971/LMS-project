@@ -14,24 +14,41 @@ import { Checkbox } from "../../../components/ui/checkbox";
 import { StudentContext } from "../../../context/student-context";
 import { fetchStudentViewCourseListService } from "../../../services";
 import { Card, CardContent, CardTitle } from "../../../components/ui/card";
+import { useSearchParams } from "react-router-dom";
+
+// here we update the URL to add or remove filter items
+function createSearchParamsHelper(filterParams) {
+  const queryParams = [];
+
+  for (const [key, value] of Object.entries(filterParams)) {
+    if (Array.isArray(value) && value.length > 0) {
+      const paramValue = value.join(",");
+
+      queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
+    }
+  }
+  return queryParams.join("&");
+}
 
 function StudentViewCoursesPage() {
-  const [sort, setSort] = useState("price-lowtohigh");
-  const [filters, setFilters] = useState({});
   const { studentViewCoursesList, setStudentViewCoursesList } =
     useContext(StudentContext);
 
-  const fetchAllStudentViewCourses = async () => {
-    const response = await fetchStudentViewCourseListService();
+  const [sort, setSort] = useState("price-lowtohigh");
+  const [filters, setFilters] = useState({});
+  const [searchParams, setSearchParams] = useSearchParams(); //when filter option clicked, update URL to add or remove param values
+
+  const fetchAllStudentViewCourses = async (filters, sort) => {
+    const query = new URLSearchParams({
+        ...filters,
+        sortBy: sort
+    })
+    const response = await fetchStudentViewCourseListService(query);
 
     if (response?.success) {
       setStudentViewCoursesList(response?.data);
     }
   };
-
-  useEffect(() => {
-    fetchAllStudentViewCourses();
-  }, []);
 
   const handleFilterOnChange = async (getSectionId, getCurrentOption) => {
     let copyFilters = { ...filters };
@@ -44,7 +61,7 @@ function StudentViewCoursesPage() {
         [getSectionId]: [getCurrentOption.id],
       };
 
-      console.log("copyFilters", copyFilters);
+      //   console.log("copyFilters", copyFilters);
     } else {
       const indexOfCurrentOption = copyFilters[getSectionId].indexOf(
         getCurrentOption.id
@@ -60,7 +77,18 @@ function StudentViewCoursesPage() {
     sessionStorage.setItem("filters", JSON.stringify(copyFilters));
   };
 
-  console.log('filters :', filters)
+  useEffect(() => {
+    const buildQueryStringForFilters = createSearchParamsHelper(filters);
+    setSearchParams(new URLSearchParams(buildQueryStringForFilters));
+  }, [filters]);
+
+  useEffect(() => {
+    if(filters !== null && sort !== null){
+        fetchAllStudentViewCourses(filters, sort);
+    }
+  }, [filters, sort]);
+
+  //   console.log('filters :', filters)
 
   return (
     <div className="container mx-auto p-4">
@@ -78,7 +106,12 @@ function StudentViewCoursesPage() {
                     {filterOptions[keyItem].map((option) => (
                       <Label className="flex font-medium items-center gap-3">
                         <Checkbox
-                          checked={false}
+                          checked={
+                            filters &&
+                            Object.keys(filters).length > 0 &&
+                            filters[keyItem] &&
+                            filters[keyItem].indexOf(option.id) > -1
+                          }
                           onCheckedChange={() =>
                             handleFilterOnChange(keyItem, option)
                           }
