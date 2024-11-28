@@ -120,9 +120,9 @@ export async function mediaBulkUploadService(formData, onProgressCallback) {
     }
 }
 
-export async function fetchStudentViewCourseListService() {
+export async function fetchStudentViewCourseListService(query) {
     try {
-        const { data } = await axiosInstance.get(`/student/course/get`);
+        const { data } = await axiosInstance.get(`/student/course/get?${query}`);
         return data;
     } catch (error) {
         console.error('Error:', error.response?.data || error.message);
