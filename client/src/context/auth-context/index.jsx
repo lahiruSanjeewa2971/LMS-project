@@ -46,7 +46,7 @@ export default function AuthProvider({ children }) {
   async function checkAuthUser() {
     try {
       const data = await checkAuthService();
-      console.log('checkAuthUser', data)
+      // console.log("checkAuthUser", data);
 
       if (data.success) {
         setAuth({
@@ -62,11 +62,14 @@ export default function AuthProvider({ children }) {
         setLoading(false);
       }
     } catch (error) {
-      setAuth({
-        authenticate: false,
-        user: null,
-      });
       console.log("Auth user check error :", error);
+      if (!error?.response?.data?.success) {
+        setAuth({
+          authenticate: false,
+          user: null,
+        });
+        setLoading(false);
+      }
     }
   }
 
@@ -91,7 +94,7 @@ export default function AuthProvider({ children }) {
         handleRegisterUser,
         handleLoginUser,
         auth,
-        resetCredentials
+        resetCredentials,
       }}
     >
       {loading ? <Skeleton /> : children}

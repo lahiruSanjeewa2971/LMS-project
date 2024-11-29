@@ -40,9 +40,9 @@ function StudentViewCoursesPage() {
 
   const fetchAllStudentViewCourses = async (filters, sort) => {
     const query = new URLSearchParams({
-        ...filters,
-        sortBy: sort
-    })
+      ...filters,
+      sortBy: sort,
+    });
     const response = await fetchStudentViewCourseListService(query);
 
     if (response?.success) {
@@ -82,11 +82,22 @@ function StudentViewCoursesPage() {
     setSearchParams(new URLSearchParams(buildQueryStringForFilters));
   }, [filters]);
 
+  //   Make filters and sorting stays when the page re-freshed
   useEffect(() => {
-    if(filters !== null && sort !== null){
-        fetchAllStudentViewCourses(filters, sort);
+    setSort("price-lowtohigh");
+    setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
+  }, []);
+
+  useEffect(() => {
+    if (filters !== null && sort !== null) {
+      fetchAllStudentViewCourses(filters, sort);
     }
   }, [filters, sort]);
+
+  //   Make URL clear when go another page and comes back
+  useEffect(() => {
+    sessionStorage.removeItem("filters");
+  }, []);
 
   //   console.log('filters :', filters)
 
