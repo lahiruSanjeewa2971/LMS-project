@@ -14,7 +14,8 @@ import { Checkbox } from "../../../components/ui/checkbox";
 import { StudentContext } from "../../../context/student-context";
 import { fetchStudentViewCourseListService } from "../../../services";
 import { Card, CardContent, CardTitle } from "../../../components/ui/card";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Skeleton } from "../../../components/ui/skeleton";
 
 // here we update the URL to add or remove filter items
 function createSearchParamsHelper(filterParams) {
@@ -31,8 +32,13 @@ function createSearchParamsHelper(filterParams) {
 }
 
 function StudentViewCoursesPage() {
-  const { studentViewCoursesList, setStudentViewCoursesList } =
-    useContext(StudentContext);
+  const navigate = useNavigate();
+  const {
+    studentViewCoursesList,
+    setStudentViewCoursesList,
+    loadingState,
+    setLoadingState,
+  } = useContext(StudentContext);
 
   const [sort, setSort] = useState("price-lowtohigh");
   const [filters, setFilters] = useState({});
@@ -43,10 +49,18 @@ function StudentViewCoursesPage() {
       ...filters,
       sortBy: sort,
     });
-    const response = await fetchStudentViewCourseListService(query);
 
-    if (response?.success) {
-      setStudentViewCoursesList(response?.data);
+    try {
+      setLoadingState(true);
+      const response = await fetchStudentViewCourseListService(query);
+
+      if (response?.success) {
+        setStudentViewCoursesList(response?.data);
+        setLoadingState(false);
+      }
+    } catch (error) {
+      console.log("error in fetch student course data :", error);
+      setLoadingState(false);
     }
   };
 
@@ -165,53 +179,82 @@ function StudentViewCoursesPage() {
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>
-            <span className="text-sm text-gray-600">10 results</span>
+            <span className="text-sm text-gray-600">
+              {studentViewCoursesList?.length} results
+            </span>
           </div>
 
           {/* Course list */}
           <div className="space-y-4">
-            {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
-              studentViewCoursesList.map((courseItem) => (
-                <Card key={courseItem?._id} className="cursor-pointer">
-                  <CardContent className="flex gap-4 p-4">
-                    <div className="w-48 h-32 flex-shrink-0">
-                      <img
-                        src={courseItem?.image}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <CardTitle className="text-xl mb-2">
-                        {courseItem?.title}
-                      </CardTitle>
-                      <p className="text-sm text-gray-600 mb-1">
-                        Created By{" "}
-                        <span className="font-bold">
-                          {courseItem.instructorName}
-                        </span>
-                      </p>
-                      <p className="text-[16px] text-gray-600 mb-2 mt-3">
-                        {`${courseItem?.curriculum?.length} ${
-                          courseItem?.curriculum?.length <= 1
-                            ? "Lecture"
-                            : "Lectures"
-                        } - ${courseItem?.level.toUpperCase()} Level`}
-                      </p>
-                      <p className="font-bold text-[16px]">
-                        ${courseItem?.pricing}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+            {loadingState ? (
+              <Skeleton />
             ) : (
               <>
-                <h1>No course found.</h1>
+                {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
+                  studentViewCoursesList.map((courseItem) => (
+                    <Card
+                      key={courseItem?._id}
+                      className="cursor-pointer"
+                      onClick={() =>
+                        navigate(`/course/details/${courseItem?._id}`)
+                      }
+                    >
+                      <CardContent className="flex gap-4 p-4">
+                        <div className="w-48 h-32 flex-shrink-0">
+                          <img
+                            src={courseItem?.image}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <CardTitle className="text-xl mb-2">
+                            {courseItem?.title}
+                          </CardTitle>
+                          <p className="text-sm text-gray-600 mb-1">
+                            Created By{" "}
+                            <span className="font-bold">
+                              {courseItem.instructorName}
+                            </span>
+                          </p>
+                          <p className="text-[16px] text-gray-600 mb-2 mt-3">
+                            {`${courseItem?.curriculum?.length} ${
+                              courseItem?.curriculum?.length <= 1
+                                ? "Lecture"
+                                : "Lectures"
+                            } - ${courseItem?.level.toUpperCase()} Level`}
+                          </p>
+                          <p className="font-bold text-[16px]">
+                            ${courseItem?.pricing}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <>
+                    <h1>No course found.</h1>
+                  </>
+                )}
               </>
             )}
           </div>
         </main>
       </div>
+
+      {/* <div
+        className="relative h-screen bg-fixed bg-cover bg-center"
+        style={{ backgroundImage: `url(${banner})` }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div className="relative z-10 flex items-center justify-center h-full text-center">
+          <div className="text-white space-y-4">
+            <h2 className="text-4xl font-bold">Here the Register Link</h2>
+            <p className="text-lg">
+              Scroll to see the parallax effect in action!
+            </p>
+          </div>
+        </div>
+      </div> */}
     </div>
   );
 }
