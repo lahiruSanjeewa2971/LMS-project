@@ -56,6 +56,21 @@ function StudentHomePage() {
         </div>
       </section>
 
+      <div
+        className="relative h-[500px] bg-fixed bg-cover bg-center"
+        style={{ backgroundImage: `url(${banner})` }}
+      >
+        {/* <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div className="relative z-10 flex items-center justify-center h-full text-center">
+          <div className="text-white space-y-4">
+            <h2 className="text-4xl font-bold">Here the Register Link</h2>
+            <p className="text-lg">
+              Scroll to see the parallax effect in action!
+            </p>
+          </div>
+        </div> */}
+      </div>
+
       <section className="py-12 px-4 lg:px-8">
         <h2 className="text-2xl font-bold mb-6">Featured Courses</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
