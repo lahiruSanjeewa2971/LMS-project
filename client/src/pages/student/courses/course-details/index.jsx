@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router-dom";
 import { StudentContext } from "../../../../context/student-context";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { fetchStudentViewCourseDetailsService } from "../../../../services";
 import { CheckCircle, Globe, Lock, PlayCircle } from "lucide-react";
 import {
@@ -11,9 +11,18 @@ import {
 } from "../../../../components/ui/card";
 import VideoPlayer from "../../../../components/video-player";
 import { Button } from "../../../../components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../../../components/ui/dialog";
 
 function StudentViewCourseDetailsPage() {
-    const location = useLocation();
+  const location = useLocation();
   const {
     studentViewCourseDetails,
     setStudentViewCourseDetails,
@@ -22,6 +31,10 @@ function StudentViewCourseDetailsPage() {
   } = useContext(StudentContext);
 
   const { id } = useParams();
+
+  const [displayCurrentFreePreviewVideo, setDisplayCurrentFreePreviewVideo] =
+    useState(null);
+  const [showFreePreviewDialog, setShowFreePreviewDialog] = useState(false);
 
   const fetchStudentViewCourseDetails = async (currentCourseDetailsId) => {
     try {
@@ -38,6 +51,17 @@ function StudentViewCourseDetailsPage() {
       console.log("error in fech single course details :", error);
     }
   };
+
+  const handleSetFreePreview = (getCurrentVideoInfo) => {
+    // console.log('getCurrentVideoInfo :', getCurrentVideoInfo)
+    setDisplayCurrentFreePreviewVideo(getCurrentVideoInfo?.videoUrl);
+  };
+
+  useEffect(() => {
+    if (displayCurrentFreePreviewVideo !== null) {
+      setShowFreePreviewDialog(true);
+    }
+  }, [displayCurrentFreePreviewVideo]);
 
   useEffect(() => {
     if (id) {
@@ -106,6 +130,13 @@ function StudentViewCourseDetailsPage() {
 
           <Card className="mb-8">
             <CardHeader>
+              <CardTitle>Course Description</CardTitle>
+            </CardHeader>
+            <CardContent>{studentViewCourseDetails?.description}</CardContent>
+          </Card>
+
+          <Card className="mb-8">
+            <CardHeader>
               <CardTitle>Course Curriculum</CardTitle>
             </CardHeader>
             <CardContent>
@@ -117,6 +148,11 @@ function StudentViewCourseDetailsPage() {
                         ? "cursor-pointer"
                         : "cursor-not-allowed"
                     } flex items-center mb-4`}
+                    onClick={
+                      curriculum?.freePreview
+                        ? () => handleSetFreePreview(curriculum)
+                        : null
+                    }
                   >
                     {curriculum?.freePreview ? (
                       <PlayCircle className="mr-2 w-4 h-4" />
@@ -148,13 +184,54 @@ function StudentViewCourseDetailsPage() {
                 />
               </div>
               <div className="mb-4">
-                <span className="text-3xl font-bold">${studentViewCourseDetails?.pricing}</span>
+                <span className="text-3xl font-bold">
+                  ${studentViewCourseDetails?.pricing}
+                </span>
               </div>
-              <Button className="w-full" variant="black">Buy Now</Button>
+              <Button className="w-full" variant="black">
+                Buy Now
+              </Button>
             </CardContent>
           </Card>
         </aside>
       </div>
+
+      <Dialog
+        open={showFreePreviewDialog}
+        onOpenChange={() => {
+          setShowFreePreviewDialog(false);
+          setDisplayCurrentFreePreviewVideo(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Course Preview</DialogTitle>
+          </DialogHeader>
+          <div className="aspect-video mb-4 rounded-lg flex items-center justify-center">
+            <VideoPlayer
+              url={displayCurrentFreePreviewVideo}
+              width="450px"
+              height="200px"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            {studentViewCourseDetails?.curriculum
+              ?.filter((item) => item.freePreview)
+              .map((filteredItem) => (
+                <p className="cursor-pointer text-[16px] font-medium" onClick={() => handleSetFreePreview(filteredItem)}>
+                  {filteredItem?.title}
+                </p>
+              ))}
+          </div>
+          <DialogFooter className="sm:justify-start">
+            <DialogClose asChild>
+              <Button variant="secondary" type="button">
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
