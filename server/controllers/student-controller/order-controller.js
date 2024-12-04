@@ -35,13 +35,6 @@ const capturePayment = async (req, res) => {
         const { paymentId, payerId, orderId } = req.body;
 
         let order = await Order.findById(orderId);
-        let orders = await Order.find();
-
-        // console.log('paymentId :', paymentId)
-        // console.log('payerId :', payerId)
-        // console.log('orderId :', orderId)
-        // console.log('order :', order)
-        // console.log('orders :', orders)
 
         if (!order) {
             return res.status(404).json({
@@ -59,7 +52,35 @@ const capturePayment = async (req, res) => {
 
         // update student course model
         const studentCourses = await StudentCourses.findOne({ userId: order.userId })
-        // console.log('studentCourses :', studentCourses)
+
+        if (studentCourses) {
+            // const { courses } = studentCourses;
+            // courses.map((single) => {
+            //     if (single.courseId === order.courseId) {
+            //         return res.status(400).json({
+            //             success: false,
+            //             message: 'Student already buy this course.'
+            //         })
+            //     }
+            // })
+
+            /**
+             // above comment reason. .map
+             *  map does not stop further execution, and the function continues to try to send more responses later.
+             */
+
+            // Check if student already purchased the course.
+            const courseAlreadyExists = studentCourses.courses.some(
+                (single) => single.courseId.toString() === order.courseId.toString()
+            );
+
+            if (courseAlreadyExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Student already bought this course.",
+                });
+            }
+        }
 
         if (studentCourses) {
             studentCourses.courses.push({

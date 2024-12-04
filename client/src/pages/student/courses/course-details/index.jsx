@@ -73,8 +73,19 @@ function StudentViewCourseDetailsPage() {
 
         return response;
       } catch (error) {
-        console.log("error in handleCapturePayment :", error);
-        return error;
+        if (error.response) {
+          const { data, status } = error.response;
+          console.error("Error response:", data);
+
+          if (data && data.message) {
+            alert(`Error : ${data.message}`);
+          } else {
+            alert(`Unexpected error occurred. Status: ${status}`);
+          }
+        } else {
+          console.error("Error without response:", error);
+          alert("Unable to connect to the server. Please try again later.");
+        }
       }
     }
   };
@@ -98,10 +109,8 @@ function StudentViewCourseDetailsPage() {
       coursePricing: studentViewCourseDetails?.pricing,
     };
 
-    // console.log("paymentPayload :", paymentPayload);
     try {
       const response = await createPaymentService(paymentPayload);
-      console.log("payment response :", response);
 
       if (response.success) {
         sessionStorage.setItem(
@@ -113,13 +122,24 @@ function StudentViewCourseDetailsPage() {
           response.data.orderId
         );
 
-        console.log("capturePaymentResponse :", capturePaymentResponse);
         if (capturePaymentResponse && capturePaymentResponse?.success) {
           window.location.href = "/student-courses";
         }
       }
     } catch (error) {
-      console.log("error in handleCreatePayment :", error);
+      if (error.response) {
+        const { data, status } = error.response;
+        console.error("Error response:", data);
+
+        if (data && data.message) {
+          alert(`Error ${status}: ${data.message}`);
+        } else {
+          alert(`Unexpected error occurred. Status: ${status}`);
+        }
+      } else {
+        console.error("Error without response:", error);
+        alert("Unable to connect to the server. Please try again later.");
+      }
     }
   };
 
