@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth-routes')
 const mediaRoutes = require('./routes/instructor-routes/media-routes')
 const instructorCourseRoutes = require('./routes/instructor-routes/course-routes')
 const studentViewCourseRoutes = require('./routes/student-routes/course-routes')
+const studentViewOrderRoutes = require('./routes/student-routes/order-routes')
 
 app.use(cors({
     origin: process.env.CLIENT_URL,
@@ -29,6 +30,7 @@ app.use("/auth", authRoutes);
 app.use("/media", mediaRoutes);
 app.use("/instructor/course", instructorCourseRoutes);
 app.use("/student/course", studentViewCourseRoutes);
+app.use("/student/order", studentViewOrderRoutes);
 
 app.use((err, req, res, next) => {
     console.log(err.stack);
