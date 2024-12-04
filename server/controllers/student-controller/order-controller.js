@@ -35,10 +35,17 @@ const capturePayment = async (req, res) => {
         const { paymentId, payerId, orderId } = req.body;
 
         let order = await Order.findById(orderId);
+        let orders = await Order.find();
+
+        // console.log('paymentId :', paymentId)
+        // console.log('payerId :', payerId)
+        // console.log('orderId :', orderId)
+        // console.log('order :', order)
+        // console.log('orders :', orders)
 
         if (!order) {
             return res.status(404).json({
-                success: true,
+                success: false,
                 message: 'Order cannot be found.'
             })
         }
@@ -52,6 +59,7 @@ const capturePayment = async (req, res) => {
 
         // update student course model
         const studentCourses = await StudentCourses.findOne({ userId: order.userId })
+        // console.log('studentCourses :', studentCourses)
 
         if (studentCourses) {
             studentCourses.courses.push({
@@ -81,7 +89,7 @@ const capturePayment = async (req, res) => {
         }
 
         // update course model to save student under a course
-        await Course.findOneAndUpdate(order.courseId, {
+        await Course.findOneAndUpdate({ _id: order.courseId }, {
             $addToSet: {
                 students: {
                     studentId: order.userId,

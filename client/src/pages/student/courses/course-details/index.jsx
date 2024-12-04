@@ -65,11 +65,11 @@ function StudentViewCourseDetailsPage() {
   const handleCapturePayment = async (orderId) => {
     if (orderId !== null || orderId !== undefined) {
       try {
-        const response = await captureAndFinalyzePaymentService({
-          paymentId: "",
-          payerId: auth.user._id,
-          orderId: orderId,
-        });
+        const response = await captureAndFinalyzePaymentService(
+          "",
+          auth.user._id,
+          orderId
+        );
 
         return response;
       } catch (error) {
@@ -101,7 +101,7 @@ function StudentViewCourseDetailsPage() {
     // console.log("paymentPayload :", paymentPayload);
     try {
       const response = await createPaymentService(paymentPayload);
-      // console.log("payment response :", response);
+      console.log("payment response :", response);
 
       if (response.success) {
         sessionStorage.setItem(
@@ -109,12 +109,12 @@ function StudentViewCourseDetailsPage() {
           JSON.stringify(response.data.orderId)
         );
 
-        const capturePaymentResponse = handleCapturePayment(
+        const capturePaymentResponse = await handleCapturePayment(
           response.data.orderId
         );
 
         console.log("capturePaymentResponse :", capturePaymentResponse);
-        if (capturePaymentResponse.success) {
+        if (capturePaymentResponse && capturePaymentResponse?.success) {
           window.location.href = "/student-courses";
         }
       }
