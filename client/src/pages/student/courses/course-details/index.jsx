@@ -1,7 +1,11 @@
 import { useLocation, useParams } from "react-router-dom";
 import { StudentContext } from "../../../../context/student-context";
 import React, { useContext, useEffect, useState } from "react";
-import { fetchStudentViewCourseDetailsService } from "../../../../services";
+import {
+  captureAndFinalyzePaymentService,
+  createPaymentService,
+  fetchStudentViewCourseDetailsService,
+} from "../../../../services";
 import { CheckCircle, Globe, Lock, PlayCircle } from "lucide-react";
 import {
   Card,
@@ -20,9 +24,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../../../components/ui/dialog";
+import { AuthContext } from "../../../../context/auth-context";
 
 function StudentViewCourseDetailsPage() {
-  const location = useLocation();
+  const { auth } = useContext(AuthContext);
   const {
     studentViewCourseDetails,
     setStudentViewCourseDetails,
@@ -55,6 +60,67 @@ function StudentViewCourseDetailsPage() {
   const handleSetFreePreview = (getCurrentVideoInfo) => {
     // console.log('getCurrentVideoInfo :', getCurrentVideoInfo)
     setDisplayCurrentFreePreviewVideo(getCurrentVideoInfo?.videoUrl);
+  };
+
+  const handleCapturePayment = async (orderId) => {
+    if (orderId !== null || orderId !== undefined) {
+      try {
+        const response = await captureAndFinalyzePaymentService({
+          paymentId: "",
+          payerId: auth.user._id,
+          orderId: orderId,
+        });
+
+        return response;
+      } catch (error) {
+        console.log("error in handleCapturePayment :", error);
+        return error;
+      }
+    }
+  };
+
+  const handleCreatePayment = async () => {
+    const paymentPayload = {
+      userId: auth?.user?._id,
+      userName: auth?.user?.userName,
+      userEmail: auth?.user?.userEmail,
+      orderStatus: "pending",
+      paymentMethod: "paypal",
+      paymentStatus: "initiated",
+      orderDate: new Date(),
+      paymentId: "",
+      payerId: "",
+      instructorId: studentViewCourseDetails?.instructorId,
+      instructorName: studentViewCourseDetails?.instructorName,
+      courseImage: studentViewCourseDetails?.image,
+      courseTitle: studentViewCourseDetails?.title,
+      courseId: studentViewCourseDetails?._id,
+      coursePricing: studentViewCourseDetails?.pricing,
+    };
+
+    // console.log("paymentPayload :", paymentPayload);
+    try {
+      const response = await createPaymentService(paymentPayload);
+      // console.log("payment response :", response);
+
+      if (response.success) {
+        sessionStorage.setItem(
+          "orderId",
+          JSON.stringify(response.data.orderId)
+        );
+
+        const capturePaymentResponse = handleCapturePayment(
+          response.data.orderId
+        );
+
+        console.log("capturePaymentResponse :", capturePaymentResponse);
+        if (capturePaymentResponse.success) {
+          window.location.href = "/student-courses";
+        }
+      }
+    } catch (error) {
+      console.log("error in handleCreatePayment :", error);
+    }
   };
 
   useEffect(() => {
@@ -188,7 +254,11 @@ function StudentViewCourseDetailsPage() {
                   ${studentViewCourseDetails?.pricing}
                 </span>
               </div>
-              <Button className="w-full" variant="black">
+              <Button
+                className="w-full"
+                variant="black"
+                onClick={() => handleCreatePayment()}
+              >
                 Buy Now
               </Button>
             </CardContent>
@@ -218,7 +288,10 @@ function StudentViewCourseDetailsPage() {
             {studentViewCourseDetails?.curriculum
               ?.filter((item) => item.freePreview)
               .map((filteredItem) => (
-                <p className="cursor-pointer text-[16px] font-medium" onClick={() => handleSetFreePreview(filteredItem)}>
+                <p
+                  className="cursor-pointer text-[16px] font-medium"
+                  onClick={() => handleSetFreePreview(filteredItem)}
+                >
                   {filteredItem?.title}
                 </p>
               ))}
