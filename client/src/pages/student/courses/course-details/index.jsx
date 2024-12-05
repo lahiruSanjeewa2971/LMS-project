@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router-dom";
+import { Navigate, useLocation, useParams } from "react-router-dom";
 import { StudentContext } from "../../../../context/student-context";
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -40,17 +40,21 @@ function StudentViewCourseDetailsPage() {
   const [displayCurrentFreePreviewVideo, setDisplayCurrentFreePreviewVideo] =
     useState(null);
   const [showFreePreviewDialog, setShowFreePreviewDialog] = useState(false);
+  const [coursePurchaseId, setSoursePurchaseId] = useState(null);
 
   const fetchStudentViewCourseDetails = async (currentCourseDetailsId) => {
     try {
       const response = await fetchStudentViewCourseDetailsService(
-        currentCourseDetailsId
+        currentCourseDetailsId,
+        auth?.user?._id
       );
 
       if (response.success) {
         setStudentViewCourseDetails(response?.data);
+        setSoursePurchaseId(response?.coursePurchaseId);
       } else {
         setStudentViewCourseDetails(null);
+        setSoursePurchaseId(false);
       }
     } catch (error) {
       console.log("error in fech single course details :", error);
@@ -142,6 +146,10 @@ function StudentViewCourseDetailsPage() {
       }
     }
   };
+
+  if(coursePurchaseId !== null){
+    return <Navigate />
+  }
 
   useEffect(() => {
     if (displayCurrentFreePreviewVideo !== null) {

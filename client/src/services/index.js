@@ -130,9 +130,9 @@ export async function fetchStudentViewCourseListService(query) {
     }
 }
 
-export async function fetchStudentViewCourseDetailsService(id) {
+export async function fetchStudentViewCourseDetailsService(id, studentId) {
     try {
-        const { data } = await axiosInstance.get(`/student/course/get/details/${id}`);
+        const { data } = await axiosInstance.get(`/student/course/get/details/${id}/${studentId}`);
         return data;
     } catch (error) {
         console.error('Error:', error.response?.data || error.message);
@@ -155,4 +155,14 @@ export async function captureAndFinalyzePaymentService(paymentId, payerId, order
     })
 
     return data.data;
+}
+
+export async function fetchStudentBoughtCourseService(studentId) {
+    try {
+        const { data } = await axiosInstance.get(`/student/bought-courses/get/${studentId}`);
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
 }
