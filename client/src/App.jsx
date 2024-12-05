@@ -11,6 +11,7 @@ import AddNewCoursePage from "./pages/instructor/add-new-course";
 import StudentViewCoursesPage from "./pages/student/courses";
 import StudentViewCourseDetailsPage from "./pages/student/courses/course-details";
 import StudentCoursesPage from "./pages/student/student-courses";
+import StudentViewCourseProgressPage from "./pages/student/courses/course-progress";
 
 function App() {
   const { auth } = useContext(AuthContext);
@@ -51,6 +52,7 @@ function App() {
           <Route path="courses" element={<StudentViewCoursesPage/>} />
           <Route path="course/details/:id" element={<StudentViewCourseDetailsPage/>} />
           <Route path="student-courses" element={<StudentCoursesPage/>} />
+          <Route path="course-progrss" element={<StudentViewCourseProgressPage/>} />
         </Route>
 
         <Route path="*" element={<NotFoundPage/>} />
