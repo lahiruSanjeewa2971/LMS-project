@@ -52,7 +52,7 @@ function App() {
           <Route path="courses" element={<StudentViewCoursesPage/>} />
           <Route path="course/details/:id" element={<StudentViewCourseDetailsPage/>} />
           <Route path="student-courses" element={<StudentCoursesPage/>} />
-          <Route path="course-progrss" element={<StudentViewCourseProgressPage/>} />
+          <Route path="course-progrss/:id" element={<StudentViewCourseProgressPage/>} />
         </Route>
 
         <Route path="*" element={<NotFoundPage/>} />

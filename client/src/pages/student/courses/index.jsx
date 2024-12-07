@@ -12,10 +12,14 @@ import { filterOptions, sortOptions } from "../../../config";
 import { Label } from "../../../components/ui/label";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { StudentContext } from "../../../context/student-context";
-import { fetchStudentViewCourseListService } from "../../../services";
+import {
+  checkCoursePurchaseInfoService,
+  fetchStudentViewCourseListService,
+} from "../../../services";
 import { Card, CardContent, CardTitle } from "../../../components/ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Skeleton } from "../../../components/ui/skeleton";
+import { AuthContext } from "../../../context/auth-context";
 
 // here we update the URL to add or remove filter items
 function createSearchParamsHelper(filterParams) {
@@ -33,6 +37,7 @@ function createSearchParamsHelper(filterParams) {
 
 function StudentViewCoursesPage() {
   const navigate = useNavigate();
+  const { auth } = useContext(AuthContext);
   const {
     studentViewCoursesList,
     setStudentViewCoursesList,
@@ -89,6 +94,26 @@ function StudentViewCoursesPage() {
     }
     setFilters(copyFilters);
     sessionStorage.setItem("filters", JSON.stringify(copyFilters));
+  };
+
+  const handleCourseNavigate = async (courseId) => {
+    try {
+      const response = await checkCoursePurchaseInfoService(
+        courseId,
+        auth?.user?._id
+      );
+
+      // console.log('checkCoursePurchaseInfoService :', response)
+      if (response.success) {
+        if (response?.data) {
+          navigate(`/course-progrss/${courseId}`);
+        } else {
+          navigate(`/course/details/${courseId}`);
+        }
+      }
+    } catch (error) {
+      console.log("error in handleCourseNavigate :", error);
+    }
   };
 
   useEffect(() => {
@@ -195,9 +220,7 @@ function StudentViewCoursesPage() {
                     <Card
                       key={courseItem?._id}
                       className="cursor-pointer"
-                      onClick={() =>
-                        navigate(`/course/details/${courseItem?._id}`)
-                      }
+                      onClick={() => handleCourseNavigate(courseItem?._id)}
                     >
                       <CardContent className="flex gap-4 p-4">
                         <div className="w-48 h-32 flex-shrink-0">

@@ -5,8 +5,10 @@ import React, { useContext, useEffect } from "react";
 import { Card, CardContent, CardFooter } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
 import { Watch } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function StudentCoursesPage() {
+  const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
   const { studentBoughtCoursesList, setStudentBoughtCoursesList } =
     useContext(StudentContext);
@@ -61,9 +63,9 @@ function StudentCoursesPage() {
               </CardContent>
 
               <CardFooter>
-                <Button variant="black" className="flex-1">
+                <Button variant="black" className="flex-1" onClick={() => navigate(`/course-progrss/${course?.courseId}`)}>
                   <Watch className="mr-2 h-4 w-4" />
-                  Start Watching
+                  Start Watching-
                 </Button>
               </CardFooter>
             </Card>
