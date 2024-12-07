@@ -1,8 +1,14 @@
-import { Navigate, useLocation, useParams } from "react-router-dom";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { StudentContext } from "../../../../context/student-context";
 import React, { useContext, useEffect, useState } from "react";
 import {
   captureAndFinalyzePaymentService,
+  checkCoursePurchaseInfoService,
   createPaymentService,
   fetchStudentViewCourseDetailsService,
 } from "../../../../services";
@@ -27,6 +33,7 @@ import {
 import { AuthContext } from "../../../../context/auth-context";
 
 function StudentViewCourseDetailsPage() {
+  const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
   const {
     studentViewCourseDetails,
@@ -43,6 +50,20 @@ function StudentViewCourseDetailsPage() {
   const [coursePurchaseId, setSoursePurchaseId] = useState(null);
 
   const fetchStudentViewCourseDetails = async (currentCourseDetailsId) => {
+    const checkCoursePurchanseInfoResponse =
+      await checkCoursePurchaseInfoService(
+        currentCourseDetailsId,
+        auth?.user?._id
+      );
+
+    if (
+      checkCoursePurchanseInfoResponse?.success &&
+      checkCoursePurchanseInfoResponse?.data
+    ) {
+      navigate(`course-progrss/${currentCourseDetailsId}`);
+      return;
+    }
+
     try {
       const response = await fetchStudentViewCourseDetailsService(
         currentCourseDetailsId,
@@ -147,10 +168,6 @@ function StudentViewCourseDetailsPage() {
     }
   };
 
-  if(coursePurchaseId !== null){
-    return <Navigate />
-  }
-
   useEffect(() => {
     if (displayCurrentFreePreviewVideo !== null) {
       setShowFreePreviewDialog(true);
@@ -175,6 +192,10 @@ function StudentViewCourseDetailsPage() {
           (item) => item.freePreview
         )
       : -1;
+
+  // if (coursePurchaseId !== null) {
+  //   return <Navigate to={`/course-progrss/${coursePurchaseId}`} />;
+  // }
 
   return (
     <div className="container mx-auto p-4">

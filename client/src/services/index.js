@@ -166,3 +166,13 @@ export async function fetchStudentBoughtCourseService(studentId) {
         throw error;
     }
 }
+
+export async function checkCoursePurchaseInfoService(courseId, studentId) {
+    try {
+        const { data } = await axiosInstance.get(`/student/course/purchase-info/${courseId}/${studentId}`);
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
+}
