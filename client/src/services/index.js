@@ -176,3 +176,33 @@ export async function checkCoursePurchaseInfoService(courseId, studentId) {
         throw error;
     }
 }
+
+export async function getCurrentCourseProgressService(userId, courseId) {
+    try {
+        const { data } = await axiosInstance.get(`/student/course-progress/get/${userId}/${courseId}`);
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+export async function markLectureAsViewedService(userId, courseId, lectureId) {
+    try {
+        const { data } = await axiosInstance.post(`/student/course-progress/mark-lecture-viewed`, { userId, courseId, lectureId });
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+export async function resetCourseProgressService(userId, courseId) {
+    try {
+        const { data } = await axiosInstance.post(`/student/course-progress/reset-progress`, { userId, courseId });
+        return data;
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        throw error;
+    }
+}
