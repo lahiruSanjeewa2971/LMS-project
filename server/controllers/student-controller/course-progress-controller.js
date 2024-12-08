@@ -25,6 +25,7 @@ const getCurrentCourseProgress = async (req, res) => {
         }
 
         const currentUserCourseProgress = await CourseProgress.findOne({ userId, courseId });
+        // console.log(currentUserCourseProgress)
 
         // course purchased, but haven't watched any yet.
         if (!currentUserCourseProgress || currentUserCourseProgress?.lectureProgress.length === 0) {
@@ -75,7 +76,7 @@ const markCurrentLectureAsViewed = async (req, res) => {
     try {
         const { userId, courseId, lectureId } = req.body;
 
-        let progress = await CourseProgress.find({ userId, courseId });
+        let progress = await CourseProgress.findOne({ userId, courseId });
 
         if (!progress) {
             progress = new CourseProgress({
@@ -113,7 +114,8 @@ const markCurrentLectureAsViewed = async (req, res) => {
         }
 
         // check all lectures were watched.
-        const allLecturesViewed = progress.lectureProgress.length === course.curriculum.length && progress.lectureProgress.every(item => item.viewed === true)
+        const allLecturesViewed = progress.lectureProgress.length === course.curriculum.length && progress.lectureProgress.every(item => item.viewed)
+        // console.log('allLecturesViewed ', allLecturesViewed)
 
         if (allLecturesViewed) {
             progress.completed = true;
@@ -139,7 +141,7 @@ const markCurrentLectureAsViewed = async (req, res) => {
 // reset course progress
 const resetCurrentCourseProgress = async (req, res) => {
     try {
-        const { userId, courseId } = req.body()
+        const { userId, courseId } = req.body;
 
         const progress = await CourseProgress.findOne({ userId, courseId });
 

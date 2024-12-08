@@ -3,18 +3,54 @@ import banner from "../../../../public/banner_image_new.png";
 import { Button } from "../../../components/ui/button";
 import { useContext, useEffect } from "react";
 import { StudentContext } from "../../../context/student-context";
-import { fetchStudentViewCourseListService } from "../../../services";
+import {
+  checkCoursePurchaseInfoService,
+  fetchStudentViewCourseListService,
+} from "../../../services";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../../context/auth-context";
 
 function StudentHomePage() {
+  const navigate = useNavigate();
+  const { auth } = useContext(AuthContext);
   const { studentViewCoursesList, setStudentViewCoursesList } =
     useContext(StudentContext);
 
   const fetchAllStudentViewCourses = async () => {
     const response = await fetchStudentViewCourseListService();
-    console.log("all courses :", response);
+    // console.log("all courses :", response);
     if (response?.success) {
       setStudentViewCoursesList(response?.data);
     }
+  };
+
+  const handleCourseNavigate = async (courseId) => {
+    try {
+      const response = await checkCoursePurchaseInfoService(
+        courseId,
+        auth?.user?._id
+      );
+
+      // console.log('checkCoursePurchaseInfoService :', response)
+      if (response.success) {
+        if (response?.data) {
+          navigate(`/course-progrss/${courseId}`);
+        } else {
+          navigate(`/course/details/${courseId}`);
+        }
+      }
+    } catch (error) {
+      console.log("error in handleCourseNavigate :", error);
+    }
+  };
+
+  const handleNavigateToCoursesPage = async (id) => {
+    sessionStorage.removeItem("filters");
+    const currentFilter = {
+      category: [id],
+    };
+    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+    navigate("/courses");
   };
 
   useEffect(() => {
@@ -49,6 +85,7 @@ function StudentHomePage() {
               className="justify-start"
               variant="outline"
               key={categoryItem.id}
+              onClick={() => handleNavigateToCoursesPage(categoryItem.id)}
             >
               {categoryItem.label}
             </Button>
@@ -76,12 +113,24 @@ function StudentHomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
             studentViewCoursesList.map((courseItem) => (
-              <div className="border rounded-lg overflow-hidden shadow cursor-pointer">
-                <img src={courseItem?.image} width={300} height={150} className="w-full h-40 object-cover" />
+              <div
+                onClick={() => handleCourseNavigate(courseItem?._id)}
+                className="border rounded-lg overflow-hidden shadow cursor-pointer"
+              >
+                <img
+                  src={courseItem?.image}
+                  width={300}
+                  height={150}
+                  className="w-full h-40 object-cover"
+                />
                 <div className="p-4">
-                  <h3 className="font-bold mb-2">{ courseItem?.title}</h3>
-                  <p className="text-sm text-gray-700 mb-2">{courseItem?.instructorName}</p>
-                  <p className="font-bold text-[16px]">${courseItem?.pricing}</p>
+                  <h3 className="font-bold mb-2">{courseItem?.title}</h3>
+                  <p className="text-sm text-gray-700 mb-2">
+                    {courseItem?.instructorName}
+                  </p>
+                  <p className="font-bold text-[16px]">
+                    ${courseItem?.pricing}
+                  </p>
                 </div>
               </div>
             ))
