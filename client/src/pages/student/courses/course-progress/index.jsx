@@ -1,10 +1,14 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../../../../context/auth-context";
 import { StudentContext } from "../../../../context/student-context";
-import { getCurrentCourseProgressService } from "../../../../services";
+import {
+  getCurrentCourseProgressService,
+  markLectureAsViewedService,
+  resetCourseProgressService,
+} from "../../../../services";
 import {
   Dialog,
   DialogContent,
@@ -66,6 +70,19 @@ function StudentViewCourseProgressPage() {
           if (response?.data?.progress.length === 0) {
             // if (!response?.data?.progress) {
             setCurrentLecture(response?.data?.courseDetails?.curriculum[0]);
+          } else {
+            console.log("first");
+            const lastIndexOfViewdAsTrue = response?.data?.progress.reduceRight(
+              (acc, obj, index) => {
+                return acc === -1 && obj.viewed ? index : acc;
+              },
+              -1
+            );
+            setCurrentLecture(
+              response?.data?.courseDetails?.curriculum[
+                lastIndexOfViewdAsTrue + 1
+              ]
+            );
           }
         }
       }
@@ -74,17 +91,47 @@ function StudentViewCourseProgressPage() {
     }
   };
 
-  const updateCourseProgress = async () => {}
+  const updateCourseProgress = async () => {
+    if (currentLecture) {
+      const response = await markLectureAsViewedService(
+        auth?.user?._id,
+        studentCurrentCourseProgress?.courseDetails?._id,
+        currentLecture?._id
+      );
+
+      if (response?.success) {
+        fetchCurrentCourseProgress();
+      }
+    }
+  };
+
+  const handleRewatchCourse = async () => {
+    try {
+      const response = await resetCourseProgressService(
+        auth?.user?._id,
+        studentCurrentCourseProgress?.courseDetails?._id
+      );
+
+      if (response.success) {
+        setCurrentLecture(null);
+        setShowConfetti(false);
+        setShowCourseCompleteDialog(false);
+        fetchCurrentCourseProgress();
+      }
+    } catch (error) {
+      console.log("Error in handleRewatchCourse :", error);
+    }
+  };
 
   useEffect(() => {
     fetchCurrentCourseProgress();
   }, [id]);
 
   useEffect(() => {
-    if(currentLecture?.progressValue === 1){
-      updateCourseProgress()
+    if (currentLecture?.progressValue === 1) {
+      updateCourseProgress();
     }
-  }, [currentLecture])
+  }, [currentLecture]);
 
   return (
     <div className="flex flex-col h-screen bg-[#1c1d1f] text-white">
@@ -158,7 +205,7 @@ function StudentViewCourseProgressPage() {
               </TabsTrigger>
 
               <TabsContent value="content">
-                <ScrollArea className="h-full">
+                <ScrollArea className="h-full flex-1">
                   <div className="p-4 space-y-4">
                     {studentCurrentCourseProgress?.courseDetails?.curriculum.map(
                       (item) => (
@@ -166,6 +213,14 @@ function StudentViewCourseProgressPage() {
                           key={item._id}
                           className="flex items-center space-x-2 text-sm text-white font-bold cursor-pointer"
                         >
+                          {studentCurrentCourseProgress?.progress?.find(
+                            (progressItem) =>
+                              progressItem.lectureId === item?._id
+                          )?.viewed ? (
+                            <Check className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <Play className="h-4 w-4" />
+                          )}
                           <span>{item?.title}</span>
                         </div>
                       )
@@ -175,11 +230,15 @@ function StudentViewCourseProgressPage() {
               </TabsContent>
 
               {/* <TabsContent value="overview" className="flex-1 overflow-hidden"> */}
-              <TabsContent value="overview" >
+              <TabsContent value="overview">
                 <ScrollArea className="h-full">
                   <div className="p-4">
-                    <h2 className="text-xl font-bold mb-4">About this course</h2>
-                    <p className="text-gray-400">{studentCurrentCourseProgress?.courseDetails?.description}</p>
+                    <h2 className="text-xl font-bold mb-4">
+                      About this course
+                    </h2>
+                    <p className="text-gray-400">
+                      {studentCurrentCourseProgress?.courseDetails?.description}
+                    </p>
                   </div>
                 </ScrollArea>
               </TabsContent>
@@ -206,8 +265,12 @@ function StudentViewCourseProgressPage() {
             <DialogDescription className="flex flex-col gap-3">
               <Label>You have completed the course.</Label>
               <div className="flex flex-row gap-3">
-                <Button>My Courses Page</Button>
-                <Button>Rewatch Course</Button>
+                <Button onClick={() => navigate("/student-courses")}>
+                  My Courses Page
+                </Button>
+                <Button onClick={() => handleRewatchCourse()}>
+                  Rewatch Course
+                </Button>
               </div>
             </DialogDescription>
           </DialogHeader>
