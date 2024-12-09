@@ -206,3 +206,22 @@ export async function resetCourseProgressService(userId, courseId) {
         throw error;
     }
 }
+
+
+
+
+// APIs with react-query
+
+// export async function fetchInstructorCourseListService() {
+//     try {
+//         const { data } = await axiosInstance.get(`/instructor/course/get`);
+//         return data;
+//     } catch (error) {
+//         console.error('Error:', error.response?.data || error.message);
+//         throw error;
+//     }
+// }
+export const fetchInstructorCourseListServiceWithReactQuery = async () => {
+    const { data } = await axiosInstance.get(`/instructor/course/get`);
+    return data;
+}
