@@ -31,7 +31,7 @@ export default function InstructorDashboardPage() {
       icon: BarChart,
       label: "Dashboard",
       value: "dashboard",
-      component: <InstructorDashboard />,
+      component: <InstructorDashboard listOfCourses={instructorCoursesList} />,
     },
     {
       icon: Book,
@@ -57,7 +57,7 @@ export default function InstructorDashboardPage() {
       <aside className="w-64 bg-white shadow-md hidden md:block">
         {/** for mobile hidden | larger than medium device - visible */}
         <div className="p-4">
-          <h2>Instructor View</h2>
+          <h2 className="text-2xl font-bold">Instructor View</h2>
 
           <nav>
             {menuItems.map((menuItem) => (
