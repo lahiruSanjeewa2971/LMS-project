@@ -7,6 +7,7 @@ import { Tabs, TabsContent } from "../../components/ui/tabs";
 import { AuthContext } from "../../context/auth-context";
 import { InstructorContext } from "../../context/instructor-context";
 import { fetchInstructorCourseListService } from "../../services";
+import useInstructorCourses from "../../hooks/useInstructorCourses";
 
 export default function InstructorDashboardPage() {
   const { resetCredentials } = useContext(AuthContext);
@@ -14,17 +15,32 @@ export default function InstructorDashboardPage() {
     useContext(InstructorContext);
   const [activeTab, setActiveTab] = useState("dashboard");
 
-  const fetchAllCourses = async () => {
-    const response = await fetchInstructorCourseListService();
+  const { data, isLoading, error } = useInstructorCourses();
 
-    if (response.success) {
-      setInstructorCoursesList(response?.data);
-    }
-  };
-
+  // new way with reqct-query
   useEffect(() => {
-    fetchAllCourses();
-  }, []);
+    if (data?.success) {
+      setInstructorCoursesList(data.data);
+    } else{
+      console.log('error in instructor dashboard :', error)
+    }
+    console.log('loading :', isLoading)
+  }, [data, setInstructorCoursesList]);
+
+  if (isLoading) return <p>Loading...</p>;
+
+  // Old way
+  // const fetchAllCourses = async () => {
+  //   const response = await fetchInstructorCourseListService();
+
+  //   if (response.success) {
+  //     setInstructorCoursesList(response?.data);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchAllCourses();
+  // }, []);
 
   const menuItems = [
     {
